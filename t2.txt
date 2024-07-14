@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stopwatch with Lap Time</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f0f0; /* Light gray background */
+  }
+  .container {
+    max-width: 600px;
+    margin: 50px auto;
+    background-color: #fff; /* White background for container */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Shadow for container */
+  }
+  .stopwatch {
+    font-size: 3em;
+    margin: 20px 0;
+    background-color: #333; /* Dark gray background for stopwatch */
+    color: #fff; /* White text color */
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for stopwatch */
+  }
+  .controls {
+    margin-bottom: 20px;
+  }
+  button {
+    font-size: 1em;
+    padding: 10px 20px;
+    margin: 0 10px;
+    background-color: #007bff; /* Blue background for buttons */
+    color: #fff; /* White text color */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+  }
+  .laps {
+    text-align: left;
+    margin: 0 auto;
+    max-width: 300px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9; /* Light gray background for laps container */
+  }
+  .lap-item {
+    margin-bottom: 5px;
+    padding: 5px;
+    background-color: #e9ecef; /* Light gray background for each lap item */
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Stopwatch with Lap Time</h1>
+
+    <div class="stopwatch">00:00:00</div>
+
+    <div class="controls">
+      <button onclick="startStop()">Start/Stop</button>
+      <button onclick="reset()">Reset</button>
+      <button onclick="lap()">Lap</button>
+    </div>
+
+    <div class="laps" id="laps"></div>
+  </div>
+
+  <script>
+    let startTime, currentTime, elapsedTime = 0;
+    let timerInterval;
+    let laps = [];
+
+    function startStop() {
+      if (!timerInterval) {
+        startTime = Date.now() - elapsedTime;
+        timerInterval = setInterval(updateTime, 10);
+      } else {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function reset() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      elapsedTime = 0;
+      laps = [];
+      updateTime();
+      document.getElementById('laps').innerHTML = '';
+    }
+
+    function lap() {
+      if (timerInterval) {
+        laps.push(elapsedTime);
+        const lapTime = formatTime(elapsedTime);
+        const lapsDiv = document.getElementById('laps');
+        const lapItem = document.createElement('div');
+        lapItem.classList.add('lap-item');
+        lapItem.textContent = `Lap ${laps.length}: ${lapTime}`;
+        lapsDiv.prepend(lapItem);
+      }
+    }
+
+    function updateTime() {
+      currentTime = Date.now();
+      elapsedTime = currentTime - startTime;
+      const formattedTime = formatTime(elapsedTime);
+      document.querySelector('.stopwatch').textContent = formattedTime;
+    }
+
+    function formatTime(ms) {
+      let hours = Math.floor(ms / 3600000);
+      let minutes = Math.floor((ms % 3600000) / 60000);
+      let seconds = Math.floor((ms % 60000) / 1000);
+      let centiseconds = Math.floor((ms % 1000) / 10);
+
+      hours = String(hours).padStart(2, '0');
+      minutes = String(minutes).padStart(2, '0');
+      seconds = String(seconds).padStart(2, '0');
+      centiseconds = String(centiseconds).padStart(2, '0');
+
+      return `${hours}:${minutes}:${seconds}.${centiseconds}`;
+    }
+  </script>
+</body>
+</html>
